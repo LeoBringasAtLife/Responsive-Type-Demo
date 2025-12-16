@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diseñando para el tamaño de fuente y el zoom del usuario</title>
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <style>
+      @layer reset, base, type, layout;
+
+      @layer type {
+        html {
+          --gap: round(up, 3vmin, 0.25lh);
+          --tab-size: 2;
+          --tab: calc(var(--tab-size, 2) * 1ch);
+          line-height: 1.5;
+          tab-size: var(--tab-size);
+
+          --minor-second: calc(16 / 15);
+          --major-second: calc(9 / 8);
+          --minor-third: calc(6 / 5);
+          --major-third: calc(5 / 4);
+          --perfect-fourth: calc(4 / 3);
+          --augmented-fourth: sqrt(2);
+          --perfect-fifth: calc(3 / 2);
+          --major-sixth: calc(5 / 3);
+          --golden-ratio: calc((1 + sqrt(5)) / 2);
+        }
+
+        [type-container] {
+          container: type / inline-size;
+        }
+
+        body,
+        [type-set] {
+          --medium: clamp(1rem, 17px + 0.24cqi, 1.25rem);
+          font-size: var(--type-set-size, var(--medium));
+
+          --xx-small: calc(var(--medium) * pow(var(--scale), -0.75));
+          --x-small: calc(var(--medium) * pow(var(--scale), -0.5));
+          --small: calc(var(--medium) * pow(var(--scale), -0.25));
+          --large: calc(var(--medium) * pow(var(--scale), 1));
+          --x-large: calc(var(--medium) * pow(var(--scale), 2));
+          --xx-large: calc(var(--medium) * pow(var(--scale), 3));
+          --xxx-large: calc(var(--medium) * pow(var(--scale), 4));
+
+          --scale: var(--minor-third);
+
+          @container (inline-size > 50em) {
+            --scale: var(--perfect-fourth);
+          }
+        }
+
+        body {
+          @media (width > 50em) {
+            --scale: var(--perfect-fourth);
+          }
+        }
+
+        [type-set='small'] {
+          --type-set-size: var(--small);
+        }
+        [type-set='large'] {
+          --type-set-size: var(--large);
+        }
+
+        h1 {
+          font-size: var(--xx-large);
+        }
+        h2 {
+          font-size: var(--x-large);
+        }
+        h3 {
+          font-size: var(--large);
+        }
+        h4 {
+          font-size: var(--medium);
+        }
+
+        h1,
+        h2,
+        h3 {
+          line-height: 1.25;
+          margin-block: 0.25rlh;
+        }
+
+        p,
+        li {
+          text-wrap: pretty;
+        }
+
+        blockquote {
+          border-inline-start: medium solid;
+          font-size: var(--large);
+          font-style: italic;
+          padding-inline-start: var(--tab);
+        }
+
+        figcaption {
+          font-size: var(--small);
+          font-style: italic;
+        }
+      }
+
+      @layer layout {
+        body {
+          display: grid;
+          gap: var(--gap);
+          padding-block: var(--gap);
+
+          > :is(header, main, aside, footer) {
+            container: layout / inline-size;
+          }
+        }
+
+        main {
+          display: grid;
+          gap: 1lh 0;
+          grid-template-columns:
+            [full-start] var(--margin, var(--gap))
+            [pull-start] minmax(0, 1.5fr)
+            [content-start] minmax(auto, 35em)
+            [content-end] minmax(0, 1fr)
+            [pull-end] var(--margin, var(--gap))
+            [full-end];
+
+          @media (width > 45em) {
+            --margin: 0;
+            column-gap: var(--gap);
+          }
+
+          > * {
+            margin: unset;
+            grid-column: content;
+          }
+        }
+
+        .by-line {
+          font-size: var(--small);
+          line-height: 1rlh;
+
+          @container (width > 50em) {
+            grid-column: pull-start / content-start;
+            text-align: right;
+          }
+
+          p {
+            margin: unset;
+          }
+        }
+
+        main figure {
+          grid-column: pull-start / content-end;
+        }
+
+        #articles {
+          padding: var(--gap);
+        }
+
+        article-grid {
+          display: grid;
+          gap: var(--gap);
+          grid-template-columns: repeat(auto-fit, minmax(14em, 1fr));
+        }
+      }
+
+      @layer base {
+        figure {
+          margin-inline: unset;
+        }
+        blockquote {
+          margin-inline: var(--tab);
+        }
+        p {
+          margin-block: 0.5lh;
+        }
+        ol,
+        ul {
+          padding-inline-start: var(--tab);
+        }
+        dd {
+          margin-inline-start: var(--tab);
+        }
+        hr {
+          border: 0 dotted;
+          border-block-end-width: thin;
+          margin-block: 1.5lh;
+        }
+
+        :target {
+          scroll-margin: 1lh;
+        }
+        :focus {
+          outline-offset: 4px;
+        }
+        label {
+          display: block;
+        }
+        textarea {
+          field-sizing: content;
+          inline-size: 100%;
+          min-block-size: 4lh;
+        }
+
+        table {
+          border-collapse: collapse;
+          inline-size: 100%;
+          font-variant-numeric: tabular-nums;
+        }
+
+        th,
+        td {
+          border: thin dotted;
+          text-align: left;
+          padding: 0.25lh 1ch;
+          vertical-align: top;
+        }
+
+        [visually-hidden='skip-links']:focus-within {
+          background: Canvas;
+          border: thin solid grey;
+          color: CanvasText;
+          inset: 0 auto auto 0;
+          list-style: none;
+          margin: unset;
+          padding: 1em;
+          position: fixed;
+        }
+      }
+
+      @layer reset {
+        html {
+          block-size: 100%;
+          color-scheme: light dark;
+          overflow-wrap: break-word;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+        }
+
+        body {
+          margin: unset;
+        }
+
+        pre {
+          white-space: pre-wrap;
+          white-space: preserve wrap;
+        }
+
+        picture {
+          display: contents;
+        }
+
+        img,
+        video,
+        iframe {
+          display: block;
+          block-size: auto;
+          max-inline-size: 100%;
+        }
+
+        input,
+        button,
+        textarea,
+        select {
+          font: inherit;
+        }
+
+        button,
+        input:where([type='submit'], [type='reset'], [type='button']) {
+          background: CanvasText;
+          color: Canvas;
+          border: thin solid grey;
+        }
+
+        [aria-expanded='true'],
+        [aria-pressed='true'] {
+          background: SelectedItem;
+          border-color: CanvasText;
+          color: SelectedItemText;
+        }
+
+        [hidden] {
+          display: none !important;
+        }
+
+        visually-hidden,
+        [visually-hidden]:not(:focus-within):not(:active) {
+          clip-path: inset(50%) !important;
+          height: 1px !important;
+          overflow: hidden !important;
+          position: absolute !important;
+          white-space: nowrap !important;
+          width: 1px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Diseñando para el tamaño de fuente y el zoom del usuario</h1>
+      <footer class="by-line">
+        <p>Una demo de <strong>Leonardo Bringas</strong></p>
+        <time datetime="2025-07-22" pubdate>22 de julio de 2025</time>
+      </footer>
+
+      <p>
+        <em>Usando unidades CSS modernas y funciones matemáticas</em>
+      </p>
+
+      <p>
+        Todos los navegadores principales proporcionan un tamaño de fuente
+        predeterminado de <code>16px</code> como base para cada sitio web. Los
+        usuarios pueden cambiar ese valor estableciendo una preferencia global
+        de <code>font-size</code> que se aplicará a todos los sitios web que
+        visiten, los autores de CSS pueden elegir usar o ignorar esa
+        configuración, y luego los usuarios pueden aplicar un zoom específico
+        del sitio sobre la marcha si se necesitan más ajustes.
+      </p>
+
+      <p>
+        Para mis ojos, en mi laptop, un tamaño de fuente de aproximadamente
+        <code>20px</code> se siente mejor que el predeterminado del navegador de
+        <code>16px</code>. Entonces me parece que debería establecer mi
+        preferencia de usuario a <code>20px</code>, y ese cambio debería mejorar
+        mi experiencia de la web.
+      </p>
+
+      <h2>El enfoque actual multiplica</h2>
+
+      <p>
+        La mejor práctica actual comienza seleccionando un
+        <code>font-size</code> ideal basado en píxeles que nos gusta para
+        nuestro diseño de sitio, y convirtiéndolo a <code>em</code> o
+        <code>rem</code> asumiendo <code>1em = 16px</code>, el predeterminado
+        común proporcionado por los navegadores. El resultado se puede aplicar
+        en el elemento <code>html</code> con <code>em</code> o en la etiqueta
+        <code>body</code> con <code>rem</code>:
+      </p>
+
+      <pre><code>html {
+  --DEFAULT: 16;
+  --ideal: 24;
+
+  /* calc(24 / 16 * 1rem) */
+  font-size: calc(var(--ideal) / var(--DEFAULT) * 1em);
+}</code></pre>
+
+      <p>
+        Usando ese enfoque, logramos dos objetivos importantes: nosotros (como
+        autores) podemos elegir un tamaño base ideal para el contenido de
+        nuestro sitio, y cuando los usuarios cambien su preferencia de
+        <code>font-size</code>, el texto de nuestro sitio se escalará hacia
+        arriba o hacia abajo en relación con la preferencia.
+      </p>
+
+      <p>
+        Pero si un diseñador de sitio le gustan las fuentes de
+        <code>24px</code>, y yo también (como usuario) solicito un
+        predeterminado de <code>24px</code>, parece que deberíamos estar de
+        acuerdo, ¿verdad? En cambio, el enfoque anterior nos daría un tamaño
+        base de <code>1.5em</code> (<code>24 / 16 * 1em</code>), resultando en
+        una fuente de <code>36px</code> (<code>1.5 * 24</code>).
+      </p>
+
+      <p>
+        ¿Fue útil ese ajuste? No es el tamaño de fuente que el diseñador quería,
+        no particularmente cerca del tamaño de fuente que pedí como usuario, y
+        no es un tamaño de fuente que se adapta al contexto de alguna manera
+        significativa. En lugar de fusionar nuestras preferencias de estilo para
+        encontrar el mejor ajuste, las hemos multiplicado.
+      </p>
+
+      <h2>Alternativas: negociar en lugar de multiplicar</h2>
+
+      <h3>Alternativa 1 – Confiar en el usuario</h3>
+
+      <p>
+        Si no necesitamos controlar el <code>font-size</code>, ¡está bien no
+        establecer un <code>font-size</code>! Adrian Roselli llama a esto "El
+        Mejor Tamaño de Fuente Base Ideal Definitivo Que Todos Están Manteniendo
+        en Secreto". Y estoy de acuerdo en que sería ideal si más de la web se
+        construyera alrededor de las preferencias del usuario.
+      </p>
+
+      <h3>Alternativa 2 – Negociar un promedio</h3>
+
+      <p>
+        En la propuesta original para hojas de estilo HTML en cascada, Håkon Lie
+        propuso una forma de equilibrar todos los conflictos de estilo entre el
+        usuario y el autor a través de promedios ponderados. Podemos
+        proporcionar un promedio usando la preferencia del usuario representada
+        por
+        <code>1em</code>, mientras que el valor de píxel representa nuestro
+        diseño de sitio:
+      </p>
+
+      <pre><code>html {
+  font-size: calc((1em + 24px) / 2);
+}</code></pre>
+
+      <p>
+        Ese cálculo nos da igual influencia, pero también podríamos decidir
+        ajustar la ponderación dependiendo de nuestros objetivos de diseño.
+      </p>
+
+      <h3>Alternativa 3 – El valor más grande gana</h3>
+
+      <p>
+        En lugar de pensar en la configuración predeterminada como un tamaño de
+        texto preferido, podríamos pensar en ella como un mínimo preferido.
+        Usando la función <code>max()</code> en CSS, podríamos establecer un
+        <code>font-size</code> de sitio para usarse exactamente, a menos que el
+        usuario haya solicitado algo aún más grande:
+      </p>
+
+      <pre><code>html {
+  /* el mayor entre preferencia del usuario y diseño del sitio */
+  font-size: max(1em, 20px);
+}</code></pre>
+
+      <p>
+        Eso solo permite que la preferencia del usuario aumente nuestro tamaño
+        de fuente del sitio. Podríamos cambiar a la función
+        <code>clamp()</code> si también queremos permitir disminuir el
+        predeterminado:
+      </p>
+
+      <pre><code>html {
+  /* preferencia de diseño, limitada para no alejarnos demasiado */
+  font-size: clamp(1em, 20px, 1.25em);
+}</code></pre>
+
+      <p>
+        Esos valores mínimo y máximo no están diseñados para lograr un tamaño
+        específico: no importa si <code>1em</code> aquí es <code>16px</code> o
+        <code>25px</code>. El objetivo es solo mantenernos cerca de la
+        preferencia del usuario en ambos extremos, con suficiente margen de
+        maniobra para obtener nuestra salida elegida en el caso predeterminado.
+      </p>
+
+      <h2>¿Estamos permitidos usar valores px aquí?</h2>
+
+      <p>
+        Generalmente se nos ha dicho que no establezcamos nuestro
+        <code>font-size</code> en píxeles, porque eso anularía la preferencia
+        del usuario. Pero aquí la comparación <code>max()</code> todavía permite
+        que nuestro usuario anule nuestro valor estático de
+        <code>px</code> cuando se aleja demasiado de su preferencia. Esto
+        elimina el problema con los valores <code>px</code> en los tamaños de
+        fuente.
+      </p>
+
+      <p>
+        He comenzado a usar el enfoque <code>max()</code> en <code>html</code>
+        con nuevos proyectos, para manejar la fusión de los valores
+        predeterminados del usuario y del sitio. Desde allí, puedo usar
+        <a href="https://utopia.fyi">Utopia.fyi</a> (o similar) para generar
+        escalas fluidas en el <code>body</code> que se basan en el
+        predeterminado negociado.
+      </p>
+
+      <h2>El zoom de página vs zoom solo de texto</h2>
+
+      <p>
+        Debido a que una preferencia global de <code>font-size</code> es
+        limitada, la capacidad de hacer ajustes rápidos es esencial. Sin
+        importar cuál sea mi preferencia del navegador, algunas páginas en las
+        que aterrizo necesitarán hacer zoom hacia adentro o hacia afuera para
+        funcionar bien para mí.
+      </p>
+
+      <p>
+        Ese tipo de ajuste generalmente requiere la interfaz del navegador:
+        alguna combinación de zoom de página (disponible en la mayoría de los
+        navegadores) y zoom solo de texto (solo en algunos navegadores). El zoom
+        de página funciona cambiando el tamaño de un píxel para que todo se
+        escale a la vez, mientras que el zoom solo de texto solo ajusta los
+        tamaños de fuente, sin cambiar nada más.
+      </p>
+
+      <p>
+        He escuchado a varias personas sugerir que el zoom solo de texto sería
+        más útil, si tan solo los navegadores lo convirtieran en el
+        predeterminado. Y estoy de acuerdo en que la mayoría de las veces solo
+        necesito hacer zoom para la legibilidad del texto, y no es necesario que
+        todo el diseño, junto con el espacio en blanco y las imágenes, haga zoom
+        a la misma velocidad.
+      </p>
+
+      <p>
+        Pero no creo que los navegadores puedan resolver este problema por sí
+        solos. De hecho, espero que los navegadores estén siguiendo nuestro
+        ejemplo en esto. Safari y Firefox admiten zoom solo de texto. Firefox
+        requiere un cambio en la configuración, pero Safari tiene un atajo:
+        mantener presionada la tecla opción mientras se hace zoom.
+      </p>
+
+      <p>
+        El diseño web responsive se basa en gran medida en el dimensionamiento
+        relativo, por lo que tiene sentido que todos hayamos tomado esta
+        decisión. Históricamente era mucho más difícil mezclar aspectos fluidos
+        y fijos en el mismo diseño. Pero incluso ahora mantiene las cosas
+        simples y proporcionales dimensionar todo en relación con el texto.
+      </p>
+
+      <hr />
+    </main>
+
+    <aside id="articles">
+      <h2>Más artículos de Leonardo Bringas</h2>
+
+      <article-grid>
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="../index.html"
+                >Los cambios del viewport no siempre significan lo mismo</a
+              >
+            </h3>
+            <time>16 de diciembre de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index3.html"
+                >Visualizando la tipografía responsive</a
+              >
+            </h3>
+            <time>26 de agosto de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index4.html"
+                >Diseñando para el tamaño de fuente y el zoom del usuario</a
+              >
+            </h3>
+            <time>22 de julio de 2025</time>
+          </article>
+        </grid-item>
+      </article-grid>
+    </aside>
+  </body>
+</html>

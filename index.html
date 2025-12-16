@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Los cambios del viewport no siempre significan lo mismo</h1>
+      <footer class="by-line">
+        <p>Una demo de <strong>Leonardo Bringas</strong></p>
+        <time datetime="2025-12-02" pubdate>16 de diciembre de 2025</time>
+      </footer>
+
+      <p>
+        Una acción (hacer zoom) cambia el tamaño de un píxel, mientras que la
+        otra (redimensionar) cambia el tamaño del navegador en sí - pero
+        <em>ambas cambian la cantidad de píxeles</em>
+        a lo ancho del navegador. A medida que la ventana se hace más pequeña, o
+        el píxel se hace más grande - hay menos píxeles en el viewport.
+      </p>
+
+      <p>
+        Esa desconexión hace que la tipografía responsive sea poco fiable. Si tu
+        texto está configurado para redimensionarse basándose solo en el
+        viewport o en un contenedor, ¡entonces el zoom del usuario no tendrá
+        efecto! De manera similar, ni <code>1vw</code> ni <code>100vw</code>
+        tienen en cuenta el tamaño de fuente predeterminado del usuario.
+      </p>
+
+      <h2>Asegurar que los tamaños de fuente respondan al zoom</h2>
+
+      <p>
+        Para asegurar que un tamaño de fuente relativo al viewport responda al
+        zoom, el valor <code>vw</code> tiene que combinarse con otro valor
+        usando la función <code>calc()</code>. Pero esto es solo una solución
+        parcial. En pantallas pequeñas, el tamaño de fuente provendrá
+        principalmente del valor base en píxeles, y responderá bien al zoom.
+        Pero en pantallas más grandes, el escalado por viewport se convierte en
+        una fracción mayor del tamaño de fuente renderizado, haciendo que el
+        zoom sea menos efectivo.
+      </p>
+
+      <figure type-container>
+        <img
+          src="https://assets.codepen.io/15542/Screenshot+2025-12-05+at+10.09.15%E2%80%AFAM.jpg"
+          alt="
+					 Un gráfico de 0 a 2600 en el eje x, y de 0 a 600 en el eje y.
+					 Hay una línea continua etiquetada font-size, 
+					 que comienza en (0,17) y crece en línea recta hasta (2600,82).
+					 Una línea discontinua está etiquetada 500%,
+					 comenzando en (0,500)
+					"
+        />
+        <figcaption type-set="small">
+          En el borde izquierdo, el zoom <code>500%</code> es totalmente
+          efectivo, pero esa efectividad disminuye rápidamente a medida que
+          aumenta el tamaño del navegador y las unidades de viewport (no
+          ampliables con zoom) se convierten en un factor mayor en el tamaño de
+          fuente. Cuando el navegador tiene <code>2040px</code> de ancho, el
+          zoom <code>500%</code> solo puede lograr un aumento del
+          <code>200%</code> en el tamaño de fuente. Más allá de ese punto, ya no
+          es posible un zoom efectivo del <code>200%</code>.
+        </figcaption>
+      </figure>
+
+      <p>
+        Al mover este cálculo a una función <code>clamp()</code>, con valores
+        mínimo y máximo, podés imponer límites que aseguren texto ampliable con
+        zoom.
+      </p>
+
+      <h2>
+        Asegurar que los tamaños de fuente respondan a los valores
+        predeterminados del usuario
+      </h2>
+
+      <p>
+        Pero <code>clamp(18px, 17px + 1vw, 20px)</code> todavía no responde a la
+        configuración de fuente predeterminada del usuario. Para lograr eso,
+        necesitás establecer la base - o los valores mínimo y máximo - usando
+        unidades <code>em</code> o <code>rem</code>:
+      </p>
+
+      <pre><code>html {
+            font-size: clamp(1em, 17px + 0.24vw, 1.125em);
+        }
+        </code></pre>
+
+      <p>Tené en cuenta que:</p>
+      <ul>
+        <li>
+          El mínimo y el máximo usan unidades <code>em</code>, que se basan en
+          la preferencia del usuario (y responden al zoom)
+        </li>
+        <li>
+          El valor adicional en <code>vw</code> se mantiene al mínimo, para que
+          el zoom no se vea demasiado afectado
+        </li>
+        <li>
+          El tamaño máximo (<code>1.125em</code>) está muy por debajo de 2.5
+          veces el mínimo (<code>1em</code>), asegurando que un tamaño de fuente
+          del <code>200%</code>
+          siempre sea alcanzable
+        </li>
+      </ul>
+      <p>
+        <a href="https://github.com/LeoBringasAtLife" target="_blank">GitHub</a>
+        <a href="https://www.instagram.com/leobringasatlife/" target="_blank"
+          >Instagram</a
+        >
+      </p>
+      <hr />
+    </main>
+
+    <aside id="articles">
+      <h2>Más artículos de Leonardo Bringas</h2>
+
+      <article-grid>
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index2.html"
+                >La mejor unidad CSS podría ser una combinación</a
+              >
+            </h3>
+            <time>23 de septiembre de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index3.html"
+                >Visualizando la tipografía responsive</a
+              >
+
+              <!-- https://www.oddbird.net/2025/08/26/type-visual/ -->
+            </h3>
+            <time>26 de agosto de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index4.html"
+                >Diseñando para el tamaño de fuente y el zoom del usuario</a
+              >
+              <!-- https://www.oddbird.net/2025/07/22/size-preferences/ -->
+            </h3>
+            <time>22 de julio de 2025</time>
+          </article>
+        </grid-item>
+      </article-grid>
+    </aside>
+  </body>
+</html>

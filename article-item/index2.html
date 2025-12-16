@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>La mejor unidad CSS podría ser una combinación</title>
+
+    <!-- CSS GLOBAL -->
+    <link rel="stylesheet" href="../css/global.css" />
+
+    <style>
+      @layer reset, base, type, layout;
+
+      /* Aplicar tema oscuro */
+      html {
+        color-scheme: dark;
+      }
+
+      @layer type {
+        html {
+          --gap: round(up, 3vmin, 0.25lh);
+          line-height: 1.5;
+        }
+
+        [type-container] {
+          container: type / inline-size;
+        }
+
+        body,
+        [type-set] {
+          --medium: clamp(1rem, 17px + 0.24cqi, 1.25rem);
+          font-size: var(--medium);
+        }
+
+        h1 {
+          font-size: 2.5rem;
+        }
+        h2 {
+          font-size: 1.75rem;
+        }
+        h3 {
+          font-size: 1.25rem;
+        }
+
+        h1,
+        h2,
+        h3 {
+          line-height: 1.25;
+          margin-block: 0.5lh;
+        }
+
+        p,
+        li {
+          text-wrap: pretty;
+        }
+
+        figcaption {
+          font-size: 0.875rem;
+          font-style: italic;
+        }
+      }
+
+      @layer layout {
+        body {
+          display: grid;
+          gap: var(--gap);
+          padding: var(--gap);
+        }
+
+        main {
+          max-inline-size: 40em;
+          margin-inline: auto;
+          display: grid;
+          gap: 1lh;
+        }
+
+        .by-line {
+          font-size: 0.875rem;
+        }
+
+        #articles {
+          max-inline-size: 40em;
+          margin-inline: auto;
+          padding-block: var(--gap);
+        }
+
+        article-grid {
+          display: grid;
+          gap: var(--gap);
+        }
+      }
+
+      @layer base {
+        body {
+          margin: 0;
+          color-scheme: dark;
+          background-color: Canvas;
+          color: CanvasText;
+        }
+
+        pre {
+          background: color-mix(in srgb, CanvasText 10%, Canvas);
+          padding: 1lh;
+          border: thin solid;
+          border-color: color-mix(in srgb, CanvasText 30%, Canvas);
+          color: CanvasText;
+        }
+
+        code {
+          background: color-mix(in srgb, CanvasText 10%, Canvas);
+          padding: 0.125em 0.25em;
+          border-radius: 0.25em;
+        }
+
+        ul {
+          padding-inline-start: 1.25em;
+        }
+
+        hr {
+          border: none;
+          border-top: thin dotted;
+          margin-block: 2lh;
+          border-color: color-mix(in srgb, CanvasText 30%, Canvas);
+        }
+
+        a {
+          color: inherit;
+          text-decoration: underline;
+          text-decoration-color: color-mix(in srgb, CanvasText 60%, Canvas);
+        }
+
+        a:hover {
+          text-decoration-color: currentColor;
+        }
+
+        .by-line {
+          color: color-mix(in srgb, CanvasText 70%, Canvas);
+        }
+      }
+
+      @layer reset {
+        *,
+        *::before,
+        *::after {
+          box-sizing: border-box;
+        }
+
+        img {
+          max-inline-size: 100%;
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>La mejor unidad CSS podría ser una combinación</h1>
+
+      <footer class="by-line">
+        <p>Por <strong>Leonardo Bringas</strong></p>
+        <time datetime="2025-09-23">23 de septiembre de 2025</time>
+      </footer>
+
+      <p><strong>CSS - Tipografías</strong></p>
+
+      <p>
+        Hay muchos artículos y buenas prácticas establecidas en CSS que se basan
+        en determinar cuáles son las unidades correctas o "mejores" para usar.
+        Ahora que las funciones de comparación están bien soportadas en CSS, ya
+        no tenemos que elegir.
+      </p>
+
+      <p>
+        Este artículo forma parte de una serie sobre la revisión de la
+        tipografía fluida:
+      </p>
+
+      <ul>
+        <li>Unidades relativas y tipografía - con Alan Stearns</li>
+        <li>
+          Reimaginando la tipografía fluida - ¿respondemos a los inputs
+          correctos?
+        </li>
+        <li>Revisando tipografía fluida - con Richard Rutter</li>
+        <li>Diseñando para el tamaño de fuente y el zoom del usuario</li>
+        <li>Visualizando tipografía responsive</li>
+        <li><strong>La mejor unidad CSS podría ser una combinación</strong></li>
+      </ul>
+
+      <p>
+        Algo que quiero destacar de los últimos artículos de esta serie es que
+        mis soluciones suelen implicar combinar y comparar unidades.
+      </p>
+
+      <p>
+        En el artículo sobre las preferencias de tamaño de fuente del usuario,
+        señalé que los tamaños base en <code>em</code> multiplican la
+        configuración del usuario. Si pedimos un tamaño de fuente de 20px usando
+        <code>1.25em</code>, y el usuario también pide 20px, el resultado no es
+        un acuerdo, sino una combinación: 25px. Si usamos solo px, ignoramos por
+        completo la preferencia del usuario, lo cual es peor.
+      </p>
+
+      <p>
+        Pero si dejamos de hacer los cálculos en nuestra cabeza y le damos al
+        navegador ambas unidades, podemos hacer comparaciones mucho más
+        interesantes y útiles:
+      </p>
+
+      <pre><code>
+        html {
+          /* usar el mayor de los dos */
+          font-size: max(1em, 20px);
+
+          /* limitar dentro de un rango cercano a la preferencia del usuario */
+          font-size: clamp(1em, 20px, 1.25em);
+
+          /* calcular el promedio */
+          font-size: calc((1em + 24px) / 2);
+        }
+      </code></pre>
+
+      <p>
+        En los tres casos no se requiere conversión. Indicamos claramente el
+        tamaño en px que buscamos y lo comparamos con el <code>em</code> del
+        usuario. Las unidades tienen significados distintos, y esos significados
+        son útiles para expresar mejor la negociación entre el sitio y el
+        usuario.
+      </p>
+
+      <p>
+        Me gusta pensar las unidades relativas de CSS como variables provistas
+        por el navegador, a las que les pasamos un multiplicador. Pensar así me
+        obliga a enfocarme en el significado, no en el valor en px que asumimos.
+      </p>
+
+      <h2>Usar la unidad que signifique lo que querés decir</h2>
+
+      <p>
+        Una vez que resolví esa negociación en el elemento raíz, puedo referirme
+        al resultado como <code>1rem</code>. Para mí, <code>1rem</code> siempre
+        es un cálculo con una variable. De forma similar, <code>1em</code> es el
+        tamaño de fuente actual del contexto.
+      </p>
+
+      <p>
+        La diferencia entre <code>1rem</code> y <code>1em</code> es como la
+        diferencia entre <code>--brand-pink</code> y <code>currentColor</code>.
+        Ambos son variables, ambos son útiles, pero describen relaciones
+        completamente distintas. Preguntar cuál es "mejor" no tiene sentido.
+      </p>
+
+      <h2>Cómo manejo el espaciado en CSS</h2>
+
+      <p>
+        Esta serie comenzó a partir de un artículo de Ashlee Boyer sobre usar px
+        para el espaciado. Su punto es que los usuarios que hacen zoom quieren
+        ampliar el contenido, y que ampliar el espacio al mismo ritmo puede
+        afectar la legibilidad.
+      </p>
+
+      <p>
+        No tenemos que elegir entre px y em/rem como únicas opciones. Podemos
+        describir mejor cómo pensamos el espacio en blanco, teniendo en cuenta
+        tanto el tamaño de fuente como el espacio disponible.
+      </p>
+
+      <p>
+        Uso varias unidades de espaciado. Mi favorita es <code>lh</code>. Cuando
+        separo párrafos o listas, quiero mantener un ritmo consistente. Si
+        necesito tener en cuenta el espacio disponible, combino unidades y uso
+        funciones matemáticas:
+      </p>
+
+      <pre><code>
+        .card {
+          --min: min(1lh, 2vi);
+          --nearest-half: round(up, 2vi, 0.5lh);
+        }
+      </code></pre>
+
+      <p>
+        Si necesitás exactamente 12px, usá 12px. Pero si querés responder al
+        tamaño de fuente y al espacio disponible, una combinación de unidades
+        expresa mejor la intención.
+      </p>
+
+      <p>
+        No existe "la mejor unidad". Existen las unidades que expresan mejor lo
+        que querés decir.
+      </p>
+
+      <hr />
+    </main>
+
+    <aside id="articles">
+      <h2>Más artículos de Leonardo Bringas</h2>
+
+      <article-grid>
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="../index.html"
+                >Los cambios del viewport no siempre significan lo mismo</a
+              >
+            </h3>
+            <time>16 de diciembre de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index3.html"
+                >Visualizando la tipografía responsive</a
+              >
+            </h3>
+            <time>26 de agosto de 2025</time>
+          </article>
+        </grid-item>
+
+        <grid-item type-container>
+          <article type-set>
+            <h3>
+              <a href="article-item/index4.html"
+                >Diseñando para el tamaño de fuente y el zoom del usuario</a
+              >
+            </h3>
+            <time>22 de julio de 2025</time>
+          </article>
+        </grid-item>
+      </article-grid>
+    </aside>
+  </body>
+</html>
