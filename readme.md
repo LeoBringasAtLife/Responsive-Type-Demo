@@ -1,3 +1,5 @@
+
+``` Estructura
 RESPONSIVE-TYPE-DEMO/
 ├── article-item/
 │ ├── index2.html
@@ -7,3 +9,4 @@ RESPONSIVE-TYPE-DEMO/
 │ ├── global.css
 │ ├── index.html
 │ └── style.css
+```
